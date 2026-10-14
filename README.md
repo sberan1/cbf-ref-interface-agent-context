@@ -27,6 +27,7 @@ Znalostní báze pro projekt **Cz.basketball referee interface** – rozhraní n
 | [ADR 0006](adr/0006-session-a-parovani-uctu.md) | Accepted | Session a párování účtu s rozhodčím |
 | [ADR 0007](adr/0007-nasazeni-docker-vps.md) | Accepted | Nasazení: Docker na VPS, CI/CD přes GitHub Actions |
 | [ADR 0008](adr/0008-ucty-google-oauth-schvalovani.md) | Accepted | Účty přes Google OAuth se schvalováním správcem |
+| [ADR 0009](adr/0009-logovani-graylog.md) | Accepted | Logování do Graylogu |
 | [PDR 0001](pdr/0001-prihlaseni-a-dashboard-rozhodciho.md) | Accepted | Přihlášení výběrem rozhodčího a dashboard v1 |
 | [PDR 0002](pdr/0002-odmeny-rozhodcich.md) | Accepted | Odměny rozhodčích na dashboardu |
 | [PDR 0003](pdr/0003-cestovne-stravne-vsedni-den.md) | Accepted | Cestovné, stravné a náhrada za všední den |

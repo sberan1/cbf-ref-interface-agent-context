@@ -36,15 +36,23 @@ K odměnám za řízení patří náhrady: cestovné, stravné a příplatek za 
    - Bez API klíče nebo při výpadku se počítá vzdušná čára × 1,3 při 60 km/h. Výsledek je označený jako odhad a při další příležitosti se zkusí znovu.
 4. **Sazby** (`src/lib/server/travel/rates.ts`, s platností a původem jako v PDR 0002):
    - **Cestovné** podle sezóny: 4,50 Kč/km sám, 5,00 Kč/km s kolegou a 6,30 Kč/km s kolegou v NBL, ŽBL, 1. lize mužů a Českém poháru (poznámka v přehledech). Přehledy 2023/24–2026/27, před 2023/24 předpoklad.
-   - **Stravné** podle kalendářního roku (vyhláška MPSV, přehledy uvádějí stav „v době vydání“): ≥ 5 h / ≥ 12 h / ≥ 18 h.
+   - **Stravné** podle vyhlášky MPSV platné v den cesty (přehledy uvádějí stav „v době vydání“). Platí minimum pro podnikatelskou sféru (§ 163 ZP), stejně jako v přehledech. Stupně jsou ≥ 5 h / > 12 h / > 18 h, vše v Kč:
 
-     | Rok | Sazby (Kč) | Zdroj |
+     | Od | Sazby | Vyhláška |
      | --- | --- | --- |
-     | 2023 | 129 / 196 / 307 | přehled |
-     | 2024 | 140 / 212 / 333 | vyhláška, v přehledech není, označeno jako odhad |
-     | 2025 | 148 / 225 / 353 | přehled |
-     | 2026 | 155 / 236 / 370 | přehled |
-     | před 2023 | = 2023 | odhad |
+     | 2017 | 72 / 109 / 171 | 440/2016 Sb. |
+     | 2018 | 78 / 119 / 186 | 463/2017 Sb. |
+     | 2019 | 82 / 124 / 195 | 333/2018 Sb. |
+     | 2020 | 87 / 131 / 206 | 358/2019 Sb. |
+     | 2021 | 91 / 138 / 217 | 589/2020 Sb. |
+     | 2022 | 99 / 151 / 237 | 511/2021 Sb. |
+     | 20. 8. 2022 | 120 / 181 / 284 | 237/2022 Sb. |
+     | 2023 | 129 / 196 / 307 | přehled 2023/24 |
+     | 2024 | 140 / 212 / 333 | 398/2023 Sb. |
+     | 2025 | 148 / 225 / 353 | přehled 2025/26 |
+     | 2026 | 155 / 236 / 370 | přehled 2026/27, 573/2025 Sb. |
+
+     Historické sazby jsou doplněné na žádost uživatele 2026-10-14. Stránky MPSV nebyly ze sandboxu dostupné, hodnoty jsou z textů vyhlášek citovaných ve výsledcích vyhledávání (MPSV, ucetniportal.cz, sagit.cz, finance.cz).
 
    - **Délka cesty** = doba jízdy podle tras + 3 h 30 min na každý zápas dne.
 5. **Náhrada za všední den** (300 Kč za den) platí pro celostátní soutěže ČBF (oblast 0), Český pohár má 650 Kč od 2025/26. Nevyplácí se:
@@ -71,6 +79,6 @@ K odměnám za řízení patří náhrady: cestovné, stravné a příplatek za 
 ## Otevřené otázky
 
 - Ověřit Mapy.com API na produkci (odpovědi jsou implementované podle dokumentace a otestované proti mocku).
-- Sazby stravného před rokem 2023 a NBL/ŽBL: platí pro ně příplatek za všední den stejně?
+- NBL/ŽBL: platí pro ně příplatek za všední den stejně?
 - Náhrady pro ostatní oblasti (příplatky 150–250 Kč, jiné podmínky).
 - Export pro vyúčtování (CSV/PDF po měsících).

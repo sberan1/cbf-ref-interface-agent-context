@@ -157,6 +157,18 @@ Zadání:
   - Playwright nad syntetickými daty: výchozí cesty sezóny, průvodce s vyzvednutím kolegy, spolujezdec, správa účtů, profil, mobil bez vodorovného posunu.
   - Bez API klíče Mapy.com se jede přes odhad vzdušnou čarou.
 
+## Logování a historické stravné (osmá část konverzace)
+
+Zadání: „Přidej ke všemu logging, třeba do Graylogu, přidej ho do compose a vystav ho do stejné sítě jako aplikaci. Na stránkách MPSV jsou historické sazby stravného, podívej se na to.“
+
+- **Rozhodnutí:** [ADR 0009](../adr/0009-logovani-graylog.md):
+  - Graylog 6.1 + OpenSearch 2.19 + MongoDB 7.0 v compose,
+  - GELF logging driver pro služby aplikace,
+  - společný JSON logger, request a error logy webu,
+  - `graylog-setup` založí vstup a JSON extraktor (`app_*`).
+- **Stravné:** [PDR 0003](../pdr/0003-cestovne-stravne-vsedni-den.md) má sazby podle vyhlášek MPSV 2017–2026, včetně změny od 20. 8. 2022. Stránky MPSV (a další .cz weby) nebyly ze sandboxu dostupné, hodnoty pochází z vyhledávání nad texty vyhlášek. Stravné už není odhad.
+- **Ověřeno lokálně:** celý stack v Dockeru, logy webu a workeru s poli v Graylogu, idempotentní setup, UI ze sítě proxy. Sandbox nedovoluje `nofile` 65536, proto lokální override.
+
 ## Další kroky
 
 1. ~~Sazebníky soutěží a výdělek na dashboardu.~~ Hotovo pro celostátní soutěže a Prahu ([PDR 0002](../pdr/0002-odmeny-rozhodcich.md)). Zbývá případně doplnit ostatní oblasti a starší sazebníky ČBF.
