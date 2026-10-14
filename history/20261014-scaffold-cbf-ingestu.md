@@ -136,10 +136,11 @@ Zadání: „Za zápasy jsou peníze, pošlu ti pár recentních sazebníků, ud
 - **Ověřeno:**
   - Unit testy pokrývají sazby z PDF, zařazení soutěží podle reálných názvů z discovery, 1,5× pro jednoho rozhodčího a přechod 1. 1. 2027.
   - UI jsem prošel v Playwrightu nad syntetickými daty (vymyšlený rozhodčí, 77 zápasů 2016–2027), ve světlém i tmavém režimu a na mobilu.
+- **Doplněno uživatelem:** Praha 2024/25 = sazby 2023/24. Pražské zvýšení z verze 3 platí od začátku sezóny 2026/27.
 
 ## Další kroky
 
-1. ~~Sazebníky soutěží a výdělek na dashboardu.~~ Hotovo pro celostátní soutěže a Prahu ([PDR 0002](../pdr/0002-odmeny-rozhodcich.md)). Zbývá potvrdit Prahu 2024/25 a začátek platnosti verze 3, případně doplnit ostatní oblasti a starší sazebníky ČBF.
+1. ~~Sazebníky soutěží a výdělek na dashboardu.~~ Hotovo pro celostátní soutěže a Prahu ([PDR 0002](../pdr/0002-odmeny-rozhodcich.md)). Zbývá případně doplnit ostatní oblasti a starší sazebníky ČBF.
 2. Spustit `bootstrap` (lokálně nebo na serveru) a průběžně sledovat `stats` a management UI RabbitMQ. Ověřit sezóny 2006–2011.
 3. ~~Nastavit cron pro `daily` a `window`, rozhodnout o nasazení.~~ Hotovo: služba `scheduler`, [ADR 0007](../adr/0007-nasazeni-docker-vps.md). Na VPS zbývá jednou spustit `bootstrap` (`deploy/README.md`).
 4. Stáhnout DTD specifikace ČBF a porovnat je s mapováním.

@@ -51,9 +51,9 @@ Rozhodčí dostává za každý odřízený zápas odměnu podle soutěže. Chce
    | Praha | 2017/18–2019/20 | `reported` |
    | Praha | 2020/21–2022/23 | `assumed` (stejné hodnoty jako před i po) |
    | Praha | 2023/24 | `document` |
-   | Praha | 2024/25 | `assumed` = 2023/24 |
+   | Praha | 2024/25 | `reported` = 2023/24 (potvrdil rozhodčí) |
    | Praha | 2025/26 | `document` |
-   | Praha | 2026/27 | `document`, verze 3 z 30. 9. 2026 (+100 Kč), platná celou sezónu |
+   | Praha | 2026/27 | `document`, verze 3 z 30. 9. 2026 (+100 Kč), od začátku sezóny (potvrdil rozhodčí) |
    | ČBF ligy a NRL | 2017/18–2022/23 | `assumed` = 2023/24 |
    | ČBF ligy a NRL | 2023/24–31. 12. 2026 | `document` (2024/25 odvozeno, okolní sezóny jsou shodné) |
    | ČBF ligy a NRL | od 1. 1. 2027 | `document` podle zápisu; NRL beze změny |
@@ -73,7 +73,8 @@ Rozhodčí dostává za každý odřízený zápas odměnu podle soutěže. Chce
 
 ## Otevřené otázky
 
-- Praha 2024/25: platily sazby 2023/24 (předpoklad), nebo už sazby 2025/26?
-- Platí pražská verze 3 (+100 Kč) od začátku sezóny 2026/27, nebo až od jejího vydání 30. 9. 2026?
+Praha 2024/25 a začátek platnosti verze 3 potvrdil rozhodčí 2026-10-14: 2024/25 platily sazby 2023/24, zvýšení z verze 3 platí od začátku sezóny 2026/27.
+
+
 - Sazebníky ČBF a Českého poháru před 2023/24 a mapování ostatních oblastí (názvy soutěží se mezi sezónami liší).
 - Ověřit na produkčních datech, jak se jmenují fáze žákovské ligy (extraliga) a kola pohárů v `game.round`.
