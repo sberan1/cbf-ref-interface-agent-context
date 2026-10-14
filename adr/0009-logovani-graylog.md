@@ -52,7 +52,8 @@ Uživatel chce logy všeho, „třeba do Graylogu“: v compose a s webovým UI 
 ## Důsledky
 
 - \+ Jedno místo pro logy všech služeb, s poli pro filtrování (status, trvání, uživatel, chyba).
-- − Zhruba 2 GB RAM (heapy 512 MB a tvrdé limity kontejnerů, doplněno 2026-10-14 kvůli malému VPS) a 2–3 GB disku: indexy po 512 MB, drží se 4 nejnovější, journal max. 512 MB. Hodnoty indexů se do Graylogu propíšou při prvním startu, potom se mění v UI.
+- − Zhruba 2 GB RAM (heapy 512 MB a tvrdé limity kontejnerů, doplněno 2026-10-14 kvůli malému VPS).
+- − Disk nejvýš ~22 GB (strop zvolený uživatelem 25 GB): indexy po 1 GiB, drží se 20 nejnovějších, journal 1 GB. Graylog 6 zakládá index set s „data tiering“ (mazání podle stáří 30–40 dní, bez limitu velikosti) a velikostní nastavení z konfigurace ignoruje. Proto `graylog-setup` přepíná výchozí index set na legacy rotaci podle velikosti a mazání podle počtu, při každém deployi. Image stacku zaberou dalších ~4,7 GB.
 - − OpenSearch doporučuje `vm.max_map_count=262144` na hostu.
 - − Verze jsou připnuté (Graylog 6.1, OpenSearch 2.19, MongoDB 7.0). Upgrade = změna tagů podle kompatibility Graylogu.
 
