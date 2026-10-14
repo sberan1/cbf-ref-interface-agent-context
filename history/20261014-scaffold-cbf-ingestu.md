@@ -72,6 +72,23 @@ Uživatel povolil v síťové politice prostředí `cbf.cz` (`www.cbf.cz` zůsta
 - Replay všech vzorků přes celou pipeline (Postgres + RabbitMQ): 0 chyb normalizace. Součty bodů hráčů sedí na konečné skóre. Všech 33 rozhodčích a komisařů má `group_id`, komisaři přes v1 `<sup>`.
 - Aktualizované [ADR 0004](../adr/0004-db-schema-ingestu.md) a [ADR 0005](../adr/0005-rozsah-a-setrnost-stahovani.md).
 
+## Review PR (review agent se skillem `code-review`)
+
+Na žádost uživatele prošel PR review agent. Nálezy a opravy:
+
+- **Blokující:** refetch se stejným obsahem přepsal content-aware `next_due_at` výchozím TTL, takže odehrané zápasy by se stahovaly denně. Normalizer teď má hook `nextDueAt`, který se vyhodnotí po každém fetchi. Ověřeno replayem.
+- **Window:** obnova v okně sjednocená na 12 h (dřív politika 6 h vs. `window` 12 h).
+- **Delegace:** odebrání delegace už nejde přepsat starším snapshotem (strop z historie), paralelní zápisy jednoho zápasu serializuje advisory lock.
+- **HTTP:** čtení těla odpovědi je pod stejným timeoutem i klasifikací chyb (audit v `fetch_log`). Pauza se počítá od konce requestu.
+- **Broker:** listenery chyb na kanálech, restart při zavření kanálu nebo zrušení consumera. Ověřeno smazáním fronty pod běžícím workerem.
+- **Blokační pauza:** přežije reconnect i restart (obnova z `fetch_log`). Ověřeno.
+- **Drobnosti:**
+  - prázdné env hodnoty nejsou 0,
+  - propojení v1 group ID vyžaduje shodu příjmení,
+  - `LOG_LEVEL` se čte až po načtení `.env`,
+  - opravené texty.
+- Nepřevzato: čistě kosmetické cleanupy (duplicitní bloky consumerů, SQL po jednom řádku u venue).
+
 ## Další kroky
 
 1. Spustit `bootstrap` (lokálně nebo na serveru) a průběžně sledovat `stats` a management UI RabbitMQ. Ověřit sezóny 2006–2011.

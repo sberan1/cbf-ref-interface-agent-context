@@ -31,7 +31,13 @@ Uživatel na otázku, jak řadit joby, odpověděl „klidně naimplementuj RMQ 
 - Doručení je **at-least-once**, handlery jsou idempotentní (upserty, deduplikace hashem, `fetch_state`).
 - **Zdrojem pravdy je DB, ne fronta.** O tom, co je stažené a kdy se má obnovit, rozhoduje `ingest.fetch_state`. Když se fronta ztratí, stačí znovu spustit `bootstrap`/`daily`: čerstvé zdroje se přeskočí bez HTTP requestu a jen se znovu rozbalí na potomky.
 - Priority: manual 10 > window 9 > daily 8 > bootstrap 7…1 (novější sezóna = vyšší priorita).
-- Worker při ztrátě spojení skončí a vnější smyčka ho po 5 s spustí znovu (`runWorkerForever`). Nepotvrzené zprávy RabbitMQ doručí znovu.
+- Worker restartuje (`runWorkerForever`, po 5 s), když:
+  - se ztratí spojení,
+  - server zavře kanál (např. timeout potvrzení doručení),
+  - server zruší consumera (smazaná fronta při změně argumentů).
+
+  Nepotvrzené zprávy RabbitMQ doručí znovu. Rate limiter, včetně blokační pauzy, přežívá restart workeru v rámci procesu.
+- Zápisy jednoho zápasu (seznam, detail, v1 sched normalizované paralelně) serializuje transakční advisory lock na `game_id`.
 
 ## Zvažované alternativy
 

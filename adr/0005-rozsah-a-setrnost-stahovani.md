@@ -23,8 +23,8 @@ Uživatel chce integrovat zhruba 20 sezón zpět a ukládat všechno. ČBF žád
 
 ### Šetrnost
 
-- Mezi requesty je pauza **2000 ms + náhodně 0–1000 ms** (`CBF_MIN_INTERVAL_MS`, `CBF_JITTER_MS`) a v jednu chvíli běží **jen jeden request** (single active consumer, ADR 0003).
-- Na **403 / 429 / 503** se všechny requesty zastaví na **15 min** (`CBF_BLOCK_PAUSE_MS`) a zpráva jde do retry.
+- Mezi requesty je pauza **2000 ms + náhodně 0–1000 ms** (`CBF_MIN_INTERVAL_MS`, `CBF_JITTER_MS`), počítaná od konce předchozího requestu. V jednu chvíli běží **jen jeden request** (single active consumer, ADR 0003).
+- Na **403 / 429 / 503** se všechny requesty zastaví na **15 min** (`CBF_BLOCK_PAUSE_MS`) a zpráva jde do retry. Pauza přežije restart workeru i převzetí fronty jiným procesem: obnoví se z posledního `error_blocked` v `fetch_log`.
 - Retry 30 s / 5 min / 30 min, maximálně 6 pokusů, pak dead queue. 404 se uloží jako prázdný zdroj a neopakuje se.
 - User-Agent identifikuje projekt (`cbf-ref-interface/0.1 (+https://github.com/sberan1/cbf-ref-interface)`) a jde změnit přes `CBF_USER_AGENT`.
 - Uživatelské requesty aplikace nikdy nevolají ČBF (ADR 0001 bod 4).
@@ -35,7 +35,7 @@ Uživatel chce integrovat zhruba 20 sezón zpět a ukládat všechno. ČBF žád
 | --- | --- |
 | divs, phases, games, table, v1 sched | 20 h (běh `daily`) |
 | seasonList, v1 divs | 24 h |
-| game detail | podle stavu zápasu: odehraný a starší než 3 dny → nikdy; v okně −3/+14 dní → 6 h; dál v budoucnu → 7 dní; bez data nebo neodehraný → 3 dny |
+| game detail | podle stavu zápasu (přepočítá se po každém stažení, i když se obsah nezměnil): odehraný a starší než 3 dny → nikdy (nepotvrzený výsledek se kontroluje ještě 14 dní); v okně −3/+14 dní → 12 h (stejně jako `window`); dál v budoucnu → 7 dní; bez data nebo neodehraný → 3 dny |
 | team | 7 dní |
 | teamplayers | 3 dny |
 
