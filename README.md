@@ -24,6 +24,8 @@ Znalostní báze pro projekt **Cz.basketball referee interface** – rozhraní n
 | [ADR 0003](adr/0003-sync-fronta-rabbitmq.md) | Accepted | Fronta sync jobů: RabbitMQ |
 | [ADR 0004](adr/0004-db-schema-ingestu.md) | Proposed | DB schéma ingestu (raw + normalizovaná vrstva) |
 | [ADR 0005](adr/0005-rozsah-a-setrnost-stahovani.md) | Accepted | Rozsah stahování a šetrnost vůči ČBF |
+| [ADR 0006](adr/0006-session-a-parovani-uctu.md) | Accepted | Session a párování účtu s rozhodčím |
+| [PDR 0001](pdr/0001-prihlaseni-a-dashboard-rozhodciho.md) | Accepted | Přihlášení výběrem rozhodčího a dashboard v1 |
 
 History: [20260923 – analýza exportu](history/20260923-analyza-cbf-exportu.md), [20261014 – scaffold ingestu](history/20261014-scaffold-cbf-ingestu.md).
 

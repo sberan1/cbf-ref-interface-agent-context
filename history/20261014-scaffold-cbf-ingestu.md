@@ -89,10 +89,20 @@ Na žádost uživatele prošel PR review agent. Nálezy a opravy:
   - opravené texty.
 - Nepřevzato: čistě kosmetické cleanupy (duplicitní bloky consumerů, SQL po jednom řádku u venue).
 
+## Login a dashboard rozhodčího (třetí část konverzace)
+
+Zadání: „hodnocení neřeš, osobní informace ukládej, nebudu to exposovat. Udělej základní login, kde si rozhodčí vybere sebe (svoje ID) a spáruje se k danému rozhodčímu. Po přihlášení jednoduchý dashboard s pár statistikami (graf s počtem zápasů za sezónu / týden / měsíc v čase). Pak přidám sazebníky soutěží.“
+
+- **Rozhodnutí:** [PDR 0001](../pdr/0001-prihlaseni-a-dashboard-rozhodciho.md) (přihlášení výběrem bez hesla, obsah dashboardu v1) a [ADR 0006](../adr/0006-session-a-parovani-uctu.md) (schéma `app`, session v DB, hash tokenu, klouzavých 30 dní).
+- **ADR 0004:** hodnocení rozhodčích se nenormalizuje. Osobní údaje se ukládají celé, kontakty z `team.php` → `cbf.team_contact`. GDPR otázka je uzavřená rozhodnutím uživatele.
+- **SvelteKit 3:** `$lib` alias už není, používá se `#lib/...` (package.json `imports`) s explicitní příponou `.ts`. `Handle` je v `@sveltejs/kit/hooks`. Odkazy jdou přes `resolve()` z `$app/paths` (vyžaduje lint).
+- **Graf:** vlastní SVG komponenta (skládané sloupce, legenda, tooltip na hover i focus, tabulková verze). Paleta: referenční paleta dataviz skillu (slot 1 modrá = rozhodčí, slot 2 oranžová = komisař), ověřená validátorem ve světlém i tmavém režimu.
+
 ## Další kroky
 
-1. Spustit `bootstrap` (lokálně nebo na serveru) a průběžně sledovat `stats` a management UI RabbitMQ. Ověřit sezóny 2006–2011.
-2. Nastavit cron pro `daily` a `window`, rozhodnout o nasazení (ADR 0002, otevřená otázka).
-3. Stáhnout DTD specifikace ČBF a porovnat je s mapováním.
-4. Typované sloupce statistik podle potřeb UI, výklad kódů (`ZS2DP` / `ZS2KP` …).
-5. Zvážit oficiální žádost ČBF o přístup. Vyjasnit GDPR (hráči mládeže, kontakty z `team.php`), viz ADR 0004.
+1. Sazebníky soutěží (odměny podle soutěže a role) a výdělek na dashboardu, podklady dodá uživatel.
+2. Spustit `bootstrap` (lokálně nebo na serveru) a průběžně sledovat `stats` a management UI RabbitMQ. Ověřit sezóny 2006–2011.
+3. Nastavit cron pro `daily` a `window`, rozhodnout o nasazení (ADR 0002, otevřená otázka).
+4. Stáhnout DTD specifikace ČBF a porovnat je s mapováním.
+5. Typované sloupce statistik podle potřeb UI, výklad kódů (`ZS2DP` / `ZS2KP` …).
+6. Zvážit oficiální žádost ČBF o přístup. Silnější přihlášení, až bude aplikace přístupná dalším lidem (PDR 0001).

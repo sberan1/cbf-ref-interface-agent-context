@@ -39,7 +39,7 @@ Pravidla:
    - Role chybí v payloadu (klíč `uNid` neexistuje) → stav neznámý, nic se nemění.
    - ID 0 **se jménem** (ČBF posílá „Delegováno“ před zveřejněním delegace) → také neznámý stav.
    - ID 0 bez jména → role je neobsazená. U autoritativního zdroje se tím delegace odebere.
-   - `game_official.ratings` (jsonb): hodnocení rozhodčího domácími, hosty a komisařem (`rating_uN_home|guest|commisar`), ve vzorcích zatím vždy prázdné.
+   - Hodnocení rozhodčích (`rating_uN_*`) se nenormalizuje. Podle uživatele (2026-10-14) už není relevantní, zůstává jen v raw vrstvě.
    - `game_official_history`: změny `assigned` / `replaced` / `removed` se zdrojem, časem pozorování a `raw_payload_id`. První obsazení dané role v zápase má `is_initial = true` (nejde o skutečnou změnu, typicky zveřejnění delegace).
 6. **Re-normalizace:** každý normalizer má `version`. Když se mapování změní, zvýší se verze, nebo se spustí `npm run cbf -- renormalize --endpoint … --force`. Data se přepočítají z `raw_payload` bez HTTP requestů.
 7. **Statistiky:**
@@ -47,7 +47,7 @@ Pravidla:
    - `team_player` ze `teamplayers.php` (`playerstatcount`, včetně sezónních statistik).
    - Statistiky zůstávají jako jsonb s kódy ČBF (`ZS2PP` = dvojky proměněné, `ZS2PM` = minuté, `ZS1P` / `ZS1M` trestné, `ZS3P` / `ZS3M` trojky, `ZRD` / `ZRO` doskoky, `XSP` = odehrané sekundy, `PTS`, `VAL`, `PLUSMINUS`…). Význam kódů je odvozený ze součtů bodů, není oficiálně zdokumentovaný.
 8. **Skóre po čtvrtinách:** ČBF posílá v `score_quarter` i ve v1 `<partials>` **průběžný stav** po Q1–Q3 (při prodloužení i po Q4), konečné skóre zvlášť. `game_score_quarter` drží body za období. Všechna prodloužení jsou společně v období 5, protože ČBF je nerozlišuje.
-9. Kontakty funkcionářů klubu z `team.php` (`contact`: data narození, adresy, telefony) se **nenormalizují**. Zůstávají jen v raw vrstvě.
+9. Kontakty funkcionářů klubu z `team.php` (`contact`) se ukládají do `cbf.team_contact` (role, jméno, datum narození, adresa, telefony, e-mail, platnost). Při každém stažení se nahrazují aktuálním seznamem.
 
 ## Zvažované alternativy
 
@@ -70,5 +70,4 @@ Pravidla:
 - ~~Je ID rozhodčího stabilní napříč sezónami?~~ Ano, v2 ID i group ID (ověřeno na vzorcích). Po bootstrapu potvrdit dotazem nad celými daty: jedno `official.id` s víc `group_id` nebo naopak.
 - ~~Vrací `divs.php` pro `area=0` i regionální soutěže?~~ Ne, oblasti se nepřekrývají a záznam nese `area`.
 - ~~Struktura `teamplayers.php` a `game.php`?~~ Namapováno (bod 7). Statistiky zatím jen jako jsonb, typované sloupce podle potřeb UI.
-- Formát hodnocení rozhodčích (`rating_*`), ve vzorcích vždy NULL.
-- **Osobní údaje:** export obsahuje jména rozhodčích a hráčů (v mládeži i nezletilých, s výškou), u týmů i kontakty funkcionářů s datem narození a adresou. Ty jsou v raw vrstvě. Před zpřístupněním aplikace dalším lidem vyjasnit právní titul a rozsah (GDPR), případně raw payloady `team.php` čistit nebo hráče mládeže pseudonymizovat.
+- ~~Osobní údaje (GDPR)?~~ Uživatel 2026-10-14 rozhodl: osobní údaje z exportu se ukládají celé (včetně kontaktů z `team.php`) a aplikace je nebude zveřejňovat. Pokud se to změní (veřejný přístup, další uživatelé mimo rozhodčí), je potřeba to otevřít znovu.
