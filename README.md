@@ -27,6 +27,7 @@ Znalostní báze pro projekt **Cz.basketball referee interface** – rozhraní n
 | [ADR 0006](adr/0006-session-a-parovani-uctu.md) | Accepted | Session a párování účtu s rozhodčím |
 | [ADR 0007](adr/0007-nasazeni-docker-vps.md) | Accepted | Nasazení: Docker na VPS, CI/CD přes GitHub Actions |
 | [PDR 0001](pdr/0001-prihlaseni-a-dashboard-rozhodciho.md) | Accepted | Přihlášení výběrem rozhodčího a dashboard v1 |
+| [PDR 0002](pdr/0002-odmeny-rozhodcich.md) | Accepted | Odměny rozhodčích na dashboardu |
 
 History: [20260923 – analýza exportu](history/20260923-analyza-cbf-exportu.md), [20261014 – scaffold ingestu](history/20261014-scaffold-cbf-ingestu.md).
 

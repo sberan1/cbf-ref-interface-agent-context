@@ -122,9 +122,24 @@ Zadání: „Připrav CI/CD skript a řekni mi, co mám nastavit. Poběžím to 
   - Několik `network fetch failed` během prvních minut. Retry je vyřešil, dead-letter fronty zůstaly prázdné.
 - **Reverse proxy:** uživatel používá Nginx Proxy Manager v Dockeru (síť `nginx_default`). `app` se do ní připojuje přímo z `compose.yaml` ([ADR 0007](../adr/0007-nasazeni-docker-vps.md)), NPM míří na `cbf-ref-app:3000`. Odkud přišla 403 při prvním nastavení NPM, zatím ověřené není (access list NPM, nebo kontrola originu v aplikaci). Možné příčiny popisuje `deploy/README.md`.
 
+## Odměny rozhodčích (šestá část konverzace)
+
+Zadání: „Za zápasy jsou peníze, pošlu ti pár recentních sazebníků, udělej tam výpočet získaných výplat podle soutěže. Co tam chybí: mezi lety 2017 a 2020 bylo za pražské soutěže mini 300 a 3. třída 400 a každá vyšší soutěž byla vždy o 100 Kč dražší, pattern je stejný jako poslední roky.“ Podklady:
+- přehledy odměn ČABR 2023/24, 2025/26, 2026/27 (verze 2 a 3),
+- zápis VV ČABR z 22. 9. 2026 (zvýšení ligových odměn od 1. 1. 2027).
+
+- **Rozhodnutí:** [PDR 0002](../pdr/0002-odmeny-rozhodcich.md). Sazebníky jsou v kódu s platností podle data zápasu a s původem (document / reported / assumed). Počítá se jen odměna za řízení, ne cestovné, stravné ani příplatky. Pokryté jsou celostátní soutěže, NRL, Český pohár a Praha.
+- **Z přehledů:**
+  - Pražské sazby rostly: 2023/24 → 2025/26 o +100 Kč (kromě minižactva), verze 3 pro 2026/27 o dalších +100 Kč.
+  - Ligy ČBF a NRL jsou 2023/24–2026 beze změny. Ligy se zvedají od 1. 1. 2027, NRL se nemění.
+  - Přehledy neuvádějí odměny pro NBL, ŽBL ani komisaře.
+- **Ověřeno:**
+  - Unit testy pokrývají sazby z PDF, zařazení soutěží podle reálných názvů z discovery, 1,5× pro jednoho rozhodčího a přechod 1. 1. 2027.
+  - UI jsem prošel v Playwrightu nad syntetickými daty (vymyšlený rozhodčí, 77 zápasů 2016–2027), ve světlém i tmavém režimu a na mobilu.
+
 ## Další kroky
 
-1. Sazebníky soutěží (odměny podle soutěže a role) a výdělek na dashboardu, podklady dodá uživatel.
+1. ~~Sazebníky soutěží a výdělek na dashboardu.~~ Hotovo pro celostátní soutěže a Prahu ([PDR 0002](../pdr/0002-odmeny-rozhodcich.md)). Zbývá potvrdit Prahu 2024/25 a začátek platnosti verze 3, případně doplnit ostatní oblasti a starší sazebníky ČBF.
 2. Spustit `bootstrap` (lokálně nebo na serveru) a průběžně sledovat `stats` a management UI RabbitMQ. Ověřit sezóny 2006–2011.
 3. ~~Nastavit cron pro `daily` a `window`, rozhodnout o nasazení.~~ Hotovo: služba `scheduler`, [ADR 0007](../adr/0007-nasazeni-docker-vps.md). Na VPS zbývá jednou spustit `bootstrap` (`deploy/README.md`).
 4. Stáhnout DTD specifikace ČBF a porovnat je s mapováním.
