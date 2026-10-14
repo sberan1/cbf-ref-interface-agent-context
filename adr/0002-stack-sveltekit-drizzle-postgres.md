@@ -24,9 +24,9 @@ Handoff z 2026-09-23 zmiňoval „plánovaný stack NestJS API + React“, form�
 
 - \+ Jeden repozitář, jeden jazyk, sdílené typy mezi DB, workerem a UI.
 - \+ Worker jde nasadit a škálovat nezávisle na webu (jiný proces, stejný kód).
-- − Worker teď běží přes `tsx` (transpilace za běhu). Pro produkci ho později zbundlovat (esbuild / vite build) nebo přejít na nativní type stripping v Node.
-- − `adapter-auto` zůstává, cílová platforma nasazení zatím není určená.
+- − Worker lokálně běží přes `tsx` (transpilace za běhu). V produkci je zbundlovaný esbuildem (`dist/cbf.js`, [ADR 0007](0007-nasazeni-docker-vps.md)).
+- − ~~`adapter-auto` zůstává, cílová platforma nasazení zatím není určená.~~ Nahrazeno `adapter-node`, viz [ADR 0007](0007-nasazeni-docker-vps.md).
 
 ## Otevřené otázky
 
-- Cílové nasazení (VPS + docker compose? jiná platforma?) a podle toho volba adapteru.
+- ~~Cílové nasazení (VPS + docker compose? jiná platforma?) a podle toho volba adapteru.~~ Uzavřeno [ADR 0007](0007-nasazeni-docker-vps.md): Docker na VPS, `adapter-node`.

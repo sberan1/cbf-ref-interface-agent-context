@@ -98,11 +98,27 @@ Zadání: „hodnocení neřeš, osobní informace ukládej, nebudu to exposovat
 - **SvelteKit 3:** `$lib` alias už není, používá se `#lib/...` (package.json `imports`) s explicitní příponou `.ts`. `Handle` je v `@sveltejs/kit/hooks`. Odkazy jdou přes `resolve()` z `$app/paths` (vyžaduje lint).
 - **Graf:** vlastní SVG komponenta (skládané sloupce, legenda, tooltip na hover i focus, tabulková verze). Paleta: referenční paleta dataviz skillu (slot 1 modrá = rozhodčí, slot 2 oranžová = komisař), ověřená validátorem ve světlém i tmavém režimu.
 
+## CI/CD a nasazení (čtvrtá část konverzace)
+
+Zadání: „Připrav CI/CD skript a řekni mi, co mám nastavit. Poběžím to na svém VPS v Dockeru. Před tím mergni momentální PR a začni na novém.“ Odpovědi uživatele: vlastní nginx/Traefik, basic auth si udělá sám v nginx, deploy automaticky po pushi do `master`.
+
+- PR #1 (scaffold, login, dashboard) je mergnutý do `master`. CI/CD je v novém PR.
+- **Rozhodnutí:** [ADR 0007](../adr/0007-nasazeni-docker-vps.md): `adapter-node`, jeden image pro všechny role, `deploy/compose.yaml`, služby `migrate` a `scheduler`, GitHub Actions (check → image + smoke test → GHCR → deploy přes SSH).
+- **adapter-node 6 nemá `ORIGIN`:** origin odvozuje z `Host` a `X-Forwarded-Proto`. Bez těchto hlaviček z nginx login padá na 403 (CSRF). Ověřeno curlem proti `node build` i smoke testem image.
+- **Nalezeno při testu:** `docker stop` aplikaci zabil (exit 137), protože ji naživu držel idle pool Postgresu. Pool se teď zavře na `sveltekit:shutdown`, ukončení trvá asi 1 s. RabbitMQ potřebuje pevný `hostname`, jinak by přetvoření kontejneru ztratilo fronty.
+- Ověřeno lokálně:
+  - Docker build.
+  - Smoke test.
+  - Celý `deploy/compose.yaml` stack (migrate → app healthy, worker a scheduler se připojí, `stats` přes `docker compose run`).
+  - `deploy.sh` s podvrženým `docker login`.
+  - Čisté ukončení workeru a scheduleru na SIGTERM.
+  - Drift check migrací.
+
 ## Další kroky
 
 1. Sazebníky soutěží (odměny podle soutěže a role) a výdělek na dashboardu, podklady dodá uživatel.
 2. Spustit `bootstrap` (lokálně nebo na serveru) a průběžně sledovat `stats` a management UI RabbitMQ. Ověřit sezóny 2006–2011.
-3. Nastavit cron pro `daily` a `window`, rozhodnout o nasazení (ADR 0002, otevřená otázka).
+3. ~~Nastavit cron pro `daily` a `window`, rozhodnout o nasazení.~~ Hotovo: služba `scheduler`, [ADR 0007](../adr/0007-nasazeni-docker-vps.md). Na VPS zbývá jednou spustit `bootstrap` (`deploy/README.md`).
 4. Stáhnout DTD specifikace ČBF a porovnat je s mapováním.
 5. Typované sloupce statistik podle potřeb UI, výklad kódů (`ZS2DP` / `ZS2KP` …).
 6. Zvážit oficiální žádost ČBF o přístup. Silnější přihlášení, až bude aplikace přístupná dalším lidem (PDR 0001).
