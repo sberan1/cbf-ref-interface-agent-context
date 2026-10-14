@@ -52,7 +52,7 @@ Uživatel chce logy všeho, „třeba do Graylogu“: v compose a s webovým UI 
 ## Důsledky
 
 - \+ Jedno místo pro logy všech služeb, s poli pro filtrování (status, trvání, uživatel, chyba).
-- − Zhruba 2,5–3 GB RAM a místo na disku pro indexy. Retence se řídí výchozím index setem Graylogu.
+- − Zhruba 2 GB RAM (heapy 512 MB a tvrdé limity kontejnerů, doplněno 2026-10-14 kvůli malému VPS) a 2–3 GB disku: indexy po 512 MB, drží se 4 nejnovější, journal max. 512 MB. Hodnoty indexů se do Graylogu propíšou při prvním startu, potom se mění v UI.
 - − OpenSearch doporučuje `vm.max_map_count=262144` na hostu.
 - − Verze jsou připnuté (Graylog 6.1, OpenSearch 2.19, MongoDB 7.0). Upgrade = změna tagů podle kompatibility Graylogu.
 
