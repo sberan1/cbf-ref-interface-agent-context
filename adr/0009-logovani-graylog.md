@@ -31,7 +31,8 @@ Uživatel chce logy všeho, „třeba do Graylogu“: v compose a s webovým UI 
    - JSON extraktor na pole `message` s prefixem `app_`, aby `level` z JSONu nekolidoval s číselným GELF `level` v mapování OpenSearch.
 
    Je idempotentní a sama čeká na API.
-6. **Logovací stack nesmí blokovat deploy:** závislosti na něm jsou `service_started`, ne `service_healthy`, a aplikace na něm nezávisí vůbec.
+6. **Logovací stack nesmí blokovat deploy:** závislosti na něm jsou `service_started`, ne `service_healthy`, a aplikace na něm nezávisí vůbec. `deploy.sh` nasadí nejdřív aplikaci (db, rabbitmq, migrate, app, worker, scheduler), logovací stack až potom a jeho selhání (např. limit Docker Hubu) je jen varování. Bez `GRAYLOG_*` v `.env` se přeskočí.
+7. **Unikátní DNS aliasy:** aplikace a Graylog sdílejí síť proxy s cizími stacky, kde může existovat `db` nebo `mongodb`. Služby se proto navzájem oslovují aliasy `cbf-ref-db`, `cbf-ref-rabbitmq`, `cbf-ref-mongodb` a `cbf-ref-opensearch` (doplněno po review).
 
 ## Ověřeno lokálně
 

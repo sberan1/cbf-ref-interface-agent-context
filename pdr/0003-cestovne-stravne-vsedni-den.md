@@ -36,7 +36,7 @@ K odměnám za řízení patří náhrady: cestovné, stravné a příplatek za 
    - Bez API klíče nebo při výpadku se počítá vzdušná čára × 1,3 při 60 km/h. Výsledek je označený jako odhad a při další příležitosti se zkusí znovu.
 4. **Sazby** (`src/lib/server/travel/rates.ts`, s platností a původem jako v PDR 0002):
    - **Cestovné** podle sezóny: 4,50 Kč/km sám, 5,00 Kč/km s kolegou a 6,30 Kč/km s kolegou v NBL, ŽBL, 1. lize mužů a Českém poháru (poznámka v přehledech). Přehledy 2023/24–2026/27, před 2023/24 předpoklad.
-   - **Stravné** podle vyhlášky MPSV platné v den cesty (přehledy uvádějí stav „v době vydání“). Platí minimum pro podnikatelskou sféru (§ 163 ZP), stejně jako v přehledech. Stupně jsou ≥ 5 h / > 12 h / > 18 h, vše v Kč:
+   - **Stravné** podle vyhlášky MPSV platné v den cesty (přehledy uvádějí stav „v době vydání“). Platí minimum pro podnikatelskou sféru (§ 163 ZP), stejně jako v přehledech. Stupně jsou ≥ 5 h / > 12 h / > 18 h (přesně 12 h je ještě první stupeň), vše v Kč:
 
      | Od | Sazby | Vyhláška |
      | --- | --- | --- |
@@ -61,7 +61,7 @@ K odměnám za řízení patří náhrady: cestovné, stravné a příplatek za 
    - když je obec bydliště stejná jako obec hal těchto zápasů (pravidlo „s bydlištěm v místě konání“).
 
    Pražské soutěže příplatek nemají, ostatní oblasti zatím nejsou pokryté.
-6. **Výchozí cesta** (`auto`) = sám autem z domova přes haly domů. Tlačítko „Spočítat nevyplněné dny“ ji doplní pro sezónu, nejvýš 40 dnů na jeden request. Díky cache se API volá zhruba jednou na halu. Uložení v průvodci cestu potvrdí (`confirmed`). „Stejně jako jindy“ převezme vyzvednutí a vysazení z jiného potvrzeného dne a adresy kolegů se ukládají jako místa (`app.place`) pro příště.
+6. **Výchozí cesta** (`auto`) = sám autem z domova přes haly domů. Tlačítko „Spočítat nevyplněné dny“ ji doplní pro sezónu, nejvýš 40 dnů na jeden request. Dny, které nejde spočítat (chybí poloha), limit nečerpají, takže nezablokují ostatní. Změna bydliště smaže automatické cesty, potvrzené dostanou nový domov při dalším uložení v průvodci (průvodce vždy začíná a končí doma). Díky cache se API volá zhruba jednou na halu. Uložení v průvodci cestu potvrdí (`confirmed`). „Stejně jako jindy“ převezme vyzvednutí a vysazení z jiného potvrzeného dne a adresy kolegů se ukládají jako místa (`app.place`) pro příště.
 7. **Částky se počítají při čtení** z uložených zastávek a úseků, takže změna sazeb platí zpětně bez přepočtu tras. Dashboard ukazuje součty náhrad celkem, za aktuální sezónu a ve sloupci tabulky sezón.
 
 ## Zvažované alternativy
