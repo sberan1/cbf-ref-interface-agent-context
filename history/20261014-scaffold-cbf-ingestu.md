@@ -114,6 +114,14 @@ Zadání: „Připrav CI/CD skript a řekni mi, co mám nastavit. Poběžím to 
   - Čisté ukončení workeru a scheduleru na SIGTERM.
   - Drift check migrací.
 
+## První nasazení na VPS (pátá část konverzace)
+
+- **SSH:** deploy job nejdřív selhal na `Permission denied (publickey)`. Na VPS byl `/home/deploy/.ssh/authorized_keys` adresář místo souboru (sshd: „is not a regular file“). Po opravě deploy prošel. Všechny služby jsou healthy a worker stahuje sezónu 2026 tempem ~1 request / 2,7 s. `bootstrap` zařadil 652 kořenových úloh (2006–2026).
+- **Drobnosti z provozu:**
+  - Při studeném startu se worker jednou restartuje (`ECONNREFUSED` na 5672). Healthcheck RabbitMQ (`ping`) projde dřív, než listener přijímá spojení.
+  - Několik `network fetch failed` během prvních minut. Retry je vyřešil, dead-letter fronty zůstaly prázdné.
+- **Reverse proxy:** uživatel používá Nginx Proxy Manager v Dockeru (síť `nginx_default`). `app` se do ní připojuje přímo z `compose.yaml` ([ADR 0007](../adr/0007-nasazeni-docker-vps.md)), NPM míří na `cbf-ref-app:3000`. Odkud přišla 403 při prvním nastavení NPM, zatím ověřené není (access list NPM, nebo kontrola originu v aplikaci). Možné příčiny popisuje `deploy/README.md`.
+
 ## Další kroky
 
 1. Sazebníky soutěží (odměny podle soutěže a role) a výdělek na dashboardu, podklady dodá uživatel.

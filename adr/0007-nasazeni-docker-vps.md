@@ -17,13 +17,14 @@ Uživatel chce aplikaci provozovat v Dockeru na vlastním VPS a nasazovat automa
    - `migrate`: jednorázová služba spouštěná při každém `up`. `app`, `worker` a `scheduler` na ní závisí přes `service_completed_successfully`.
    - `app` na `127.0.0.1:3000`, `worker`, `scheduler`.
    - Porty jen na loopback (web pro nginx na hostu, management UI RabbitMQ přes SSH tunel). Rotace logů, `init: true`, healthcheck aplikace na `/healthz` (dotaz do DB).
+   - `app` je navíc v externí síti reverse proxy (`PROXY_NETWORK`, výchozí `nginx_default`) s aliasem `cbf-ref-app`. Na VPS běží Nginx Proxy Manager v Dockeru a na loopback hostu nedosáhne (doplněno 2026-10-14 po prvním nasazení). Ostatní služby v síti proxy nejsou.
 4. **Plánovač jako služba**, ne cron na hostu: příkaz `cbf scheduler` zařadí `daily` jednou za pražský den po `CBF_DAILY_AT` (04:30) a `window` při startu a pak každých `CBF_WINDOW_EVERY_HOURS` (6 h). Stav drží jen v paměti. Restart proto může úlohy zařadit znovu, ale čerstvé zdroje fetch krok přeskočí bez HTTP requestu (ADR 0005), takže ČBF nic navíc nedostane.
 5. **DB připojení aplikace je líné** (`getDb()`), aby `vite build` nepotřeboval `DATABASE_URL`. Na `sveltekit:shutdown` se pool zavře, takže `docker stop` aplikaci ukončí čistě, ne SIGKILLem.
 6. **CI/CD** (`.github/workflows/ci-cd.yml`):
    - **check:** lint, svelte-check, unit testy a kontrola driftu migrací (`drizzle-kit generate` nesmí nic vygenerovat).
    - **image:** build přes buildx s GHA cache a smoke test `scripts/docker-smoke-test.sh` (migrace dvakrát, `/healthz`, login za TLS proxy, CSRF 403 při cizím originu, CLI). Na `master` push do GHCR jako `:<sha>` a `:latest`.
    - **deploy** (jen `master`, environment `production`): SSH s pinovaným `known_hosts`, nahraje `compose.yaml` a `deploy.sh`. `deploy.sh` se přihlásí do GHCR tokenem jobu ze stdin, udělá `pull` a `up -d`, počká na healthy `app` a odhlásí se. Na VPS nezůstává žádný token. Deploy se přeskočí, dokud není nastavená proměnná `VPS_HOST`.
-7. **Konfigurace na VPS** je jen `.env` vedle `compose.yaml` (hesla DB a RabbitMQ, tempo a rozsah syncu). Volitelný `compose.override.yaml` CI nepřepisuje (např. připojení `app` do sítě Traefiku).
+7. **Konfigurace na VPS** je jen `.env` vedle `compose.yaml` (hesla DB a RabbitMQ, tempo a rozsah syncu). Volitelný `compose.override.yaml` CI nepřepisuje (lokální úpravy, např. Traefik labels).
 8. **Bootstrap historie** se spouští ručně jednou (`docker compose exec worker node dist/cbf.js bootstrap`). Automaticky při deployi ne, aby se 1–2 týdny dlouhý crawl nezařazoval opakovaně.
 
 ## Zvažované alternativy
@@ -32,7 +33,8 @@ Uživatel chce aplikaci provozovat v Dockeru na vlastním VPS a nasazovat automa
 - **Watchtower / pull z VPS:** bez SSH klíče v GitHubu, ale bez spárování s výsledkem CI a bez čekání na healthcheck.
 - **Cron na hostu pro `daily` / `window`:** jedna služba méně, ale konfigurace mimo repo. Služba `scheduler` se nasazuje stejně jako zbytek.
 - **Migrace při startu aplikace:** jednodušší, ale závod při víc replikách a míchání odpovědností. Samostatná služba `migrate` je explicitní a padne viditelně.
-- **Traefik / nginx v compose:** uživatel už reverse proxy má.
+- **Traefik / nginx v compose:** uživatel už reverse proxy má (Nginx Proxy Manager).
+- **Síť proxy jen přes `compose.override.yaml` na VPS:** méně konfigurace v repu, ale ruční krok, na který se při novém serveru zapomene. Síť je proto přímo v `compose.yaml` s nastavitelným názvem.
 
 ## Důsledky
 
