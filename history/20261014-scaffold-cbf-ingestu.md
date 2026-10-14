@@ -6,6 +6,8 @@ Zadání: „udělej základní scaffold pro integraci s ČBF XML exporty, integ
 
 Výchozí stav: repo `sberan1/cbf-ref-interface` bylo čerstvě založené přes `sv create` (SvelteKit 3 + Drizzle + PostgreSQL, demo tabulka `task`). Submodul `docs/agent-context` obsahoval README, šablony, ADR 0001 a history 20260923. Zápis do knowledge-base repa (problém s 403 z handoffu) tentokrát fungoval přes git push z cloudové session.
 
+V druhé části konverzace uživatel povolil síťový přístup na `cbf.cz` a proběhlo discovery živého API (viz níže).
+
 ## Otázky a odpovědi uživatele
 
 | Otázka | Odpověď |
@@ -17,31 +19,63 @@ Výchozí stav: repo `sberan1/cbf-ref-interface` bylo čerstvě založené přes
 
 ## Co vzniklo (repo cbf-ref-interface)
 
-- DB schéma `ingest` (raw_payload, fetch_state, fetch_log) a `cbf` (18 normalizovaných tabulek) + migrace → [ADR 0004](../adr/0004-db-schema-ingestu.md).
+- DB schéma `ingest` (raw_payload, fetch_state, fetch_log) a `cbf` (po discovery 19 normalizovaných tabulek) + migrace → [ADR 0004](../adr/0004-db-schema-ingestu.md).
 - `src/lib/server/cbf/`: registr endpointů, HTTP klient s rate limiterem, parsery v1/v2, normalizery a writery (včetně historie delegací), fetch/normalize pipeline, RabbitMQ broker, scheduler (bootstrap / daily / window), discovery.
 - CLI `npm run cbf -- …` (worker, bootstrap, daily, window, fetch, renormalize, requeue-dead, stats, discover), `compose.yaml` s RabbitMQ, `.env.example`.
-- Unit testy (vitest, 33 testů): coercion, převod Europe/Prague → UTC přes DST, parsery na syntetických fixturách, diff delegací, rate limiter, plánování.
+- Unit testy (vitest, po discovery 38 testů): coercion, převod Europe/Prague → UTC přes DST, převod průběžného skóre, parsery (fixtury podle skutečné struktury, smyšlené osoby), diff delegací, rate limiter, plánování.
 
-## Ověření
+## Ověření (scaffold)
 
-- **Ověřeno:** typecheck (svelte-check), ESLint, Prettier, unit testy. End-to-end běh proti **falešnému** ČBF serveru (syntetická data) s reálným PostgreSQL 17 a RabbitMQ 4 v Dockeru:
-  - bootstrap 2 sezón: 53 requestů, z toho 2 simulované chyby HTTP 500, které se po 30 s zopakovaly přes retry frontu,
-  - opakovaný bootstrap: 0 HTTP requestů (freshness),
-  - `window` zachytil výměnu rozhodčího (`replaced` v `game_official_history`),
-  - `renormalize --force`: 0 HTTP requestů a žádné duplicitní změny v historii.
-- **Neověřeno:** živé API ČBF. Proxy sandboxu znovu odmítla `www.cbf.cz` i `cbf.cz.basketball` (403 na CONNECT). Mapování polí vychází z dokumentace a z kódu klientů `jknetl/CzechBasketballSchedule` (cbf-rest-api.adoc, model.py) a `ivosu/cbf_ical` (Cbf.py). Z nich je nové hlavně:
-  - `game.php` vrací `{ gameInfo: [ {...} ], … }`,
-  - `team.php` vrací `{ info: [...], match: [...] }`,
-  - `seasonList.php` bez `json=1` vrací XML `<season><IDseason/><name/><short_name/><current/></season>`,
-  - `table.php` (v2) obsahuje `tid`, `cid`,
-  - v1 `sched.php`: `<team guest="0|1">`, `<result><pts|score><a/><b/></…><partials><partial ord>`, `<urllive>`,
-  - ČBF posílá skóre 0:0 u neodehraných zápasů,
-  - názvy oblastí 0–3, 5–8, 12–14 (z `ivosu/cbf_ical`).
+- Typecheck (svelte-check), ESLint, Prettier, unit testy.
+- End-to-end běh proti **falešnému** ČBF serveru (syntetická data) s PostgreSQL 17 a RabbitMQ 4 v Dockeru:
+  - retry po HTTP 500,
+  - opakovaný bootstrap bez requestů,
+  - zachycení výměny rozhodčího,
+  - `renormalize` bez HTTP.
+
+## Discovery živého API (týž den, druhá část konverzace)
+
+Uživatel povolil v síťové politice prostředí `cbf.cz` (`www.cbf.cz` zůstal blokovaný). Node `fetch` v sandboxu potřebuje `NODE_USE_ENV_PROXY=1`.
+
+`npm run cbf -- discover` udělal 45 requestů (všechny HTTP 200, sezóny 2026/27 a 2012/13, oblasti 0–20). Pak jeden ruční request na `game.php?game=544556` kvůli ověření stability ID. Vzorky jsou lokálně v `discovery/out/20261014/` (gitignored, obsahují osobní údaje).
+
+**Ověřená fakta** (zdroj: živé odpovědi ze `https://cbf.cz/xml/`):
+
+- `seasonList.php` vrací 35 sezón od 1992/93 (XML, s `json=1` i JSON), s `short_name` = rok začátku a `date_of_begin` / `date_of_end`. `IDseason` 2026/27 = 36 a odpovídá `sid` v `divs.php`.
+- `season=` / `s=` je rok začátku sezóny.
+- `divs.php` (v2) nese `area`, oblasti se nepřekrývají. Data v 2026/27 mají oblasti 0–8 a 12. `cgid` / `cgname` je liga (NBL, Oblasti), ne skupina kategorie.
+- `divs.php?s=` (v1) obsahuje všechny soutěže sezóny v jednom dokumentu (331 / 190) s `<flags><flag name/>`, `<cat>`, `<league>`, fázemi s `<type>`.
+- **ID prostory:**
+  - v1 a v2 sdílejí ID soutěží, fází a zápasů.
+  - Osoby a týmy jsou ve v1 sched.php identifikované „group“ ID (= v2 `uNgroup`, `tagroupby`). v1 `table.php` ale používá v2 `IDteam` + `<group>`.
+  - v2 ID rozhodčích a komisařů jsou stejná v 2012/13 i 2026/27 (ověřeno na jednom rozhodčím a jednom komisaři) a group ID taky (15 osob v obou v1 vzorcích, všechny se stejným jménem).
+- `games.php`: komisař ano, **rozhodčí ne**.
+- `game.php`:
+  - `gameInfo` obsahuje `u1..u3` (`id`, `n1` = jméno, `n2` = příjmení, `group`), hodnocení `rating_uN_home|guest|commisar` (ve vzorcích NULL), `IDhall`, `checked`, `num_visitors`.
+  - `playerStats` a `teamStats` jsou box score s kódy ČBF.
+  - Neveřejná delegace: `uNid=0`, `uNn2="Delegováno"`.
+- `score_quarter` a v1 `<partials>` jsou **průběžný stav** (po Q1–Q3, s prodloužením i po Q4), ne body za čtvrtinu.
+- `table.php` (v2): `countmatch`, `countwin`, `countloose`, `sumscore1` / `2`, `sumpoints` (u NBL procento výher), `position`, `gr` / `group`.
+- `teamplayers.php`: `playerstatcount` (hráč + sezónní statistiky, `IDplayer` = `IDuser` z game.php).
+- `team.php`: `info`, `contact` (osobní údaje funkcionářů včetně data narození a adresy), `match`, `matchaggr`.
+- Odkazy na DTD specifikace: `http://www.cbf.cz/xml/spec/{divs,sched,table}.dtd`, `http://www.cbf.cz/xml/api/spec/seasonlist.dtd` (zatím nestažené).
+
+**Úpravy podle discovery** (PR sberan1/cbf-ref-interface#1):
+
+- Parsery v1/v2 přepsané na skutečná pole. v1 sched nezapisuje ID týmů ani delegace, jen doplní `official.group_id`.
+- Převod průběžného skóre na body za období.
+- „Delegováno“ se bere jako neznámý stav.
+- Mapování statistik (`player_game_stats`, nová tabulka `game_team_stats`).
+- Sloupce `group_id` (official, player, team), `venue.hall_id`, `game.result_checked` / `attendance`, `game_official.ratings`, `season.begins_on` / `ends_on`, liga u `competition`.
+- `is_initial` se počítá pro každou roli.
+- Výchozí host je `cbf.cz`.
+- Replay všech vzorků přes celou pipeline (Postgres + RabbitMQ): 0 chyb normalizace. Součty bodů hráčů sedí na konečné skóre. Všech 33 rozhodčích a komisařů má `group_id`, komisaři přes v1 `<sup>`.
+- Aktualizované [ADR 0004](../adr/0004-db-schema-ingestu.md) a [ADR 0005](../adr/0005-rozsah-a-setrnost-stahovani.md).
 
 ## Další kroky
 
-1. Lokálně spustit `npm run cbf -- discover` (cca 50 requestů, pár minut) a podle `discovery/out/*/summary.json` opravit místa označená PROVISIONAL v `parse/v2.ts`. Ověřit otevřené otázky ADR 0004 a 0005.
-2. Po discovery spustit `bootstrap` a průběžně sledovat `stats` a management UI RabbitMQ.
-3. Nastavit cron pro `daily` a `window`, rozhodnout o nasazení (ADR 0002, otevřená otázka).
-4. Doplnit mapování statistik hráčů (`player_game_stats`).
-5. Zvážit oficiální žádost ČBF o přístup. Vyjasnit GDPR u osobních údajů, hlavně nezletilých hráčů (ADR 0004).
+1. Spustit `bootstrap` (lokálně nebo na serveru) a průběžně sledovat `stats` a management UI RabbitMQ. Ověřit sezóny 2006–2011.
+2. Nastavit cron pro `daily` a `window`, rozhodnout o nasazení (ADR 0002, otevřená otázka).
+3. Stáhnout DTD specifikace ČBF a porovnat je s mapováním.
+4. Typované sloupce statistik podle potřeb UI, výklad kódů (`ZS2DP` / `ZS2KP` …).
+5. Zvážit oficiální žádost ČBF o přístup. Vyjasnit GDPR (hráči mládeže, kontakty z `team.php`), viz ADR 0004.
