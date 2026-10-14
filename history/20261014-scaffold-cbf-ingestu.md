@@ -138,6 +138,25 @@ Zadání: „Za zápasy jsou peníze, pošlu ti pár recentních sazebníků, ud
   - UI jsem prošel v Playwrightu nad syntetickými daty (vymyšlený rozhodčí, 77 zápasů 2016–2027), ve světlém i tmavém režimu a na mobilu.
 - **Doplněno uživatelem:** Praha 2024/25 = sazby 2023/24. Pražské zvýšení z verze 3 platí od začátku sezóny 2026/27.
 
+## Účty a náhrady (sedmá část konverzace)
+
+Zadání:
+- „Pořádný login: každý si založí účet a spáruje ho se sebou, robustně přes OAuth, pro můj administrátorský účet možnost schvalovat účty.“
+- „K výplatám patří stravné a cestovné: průvodce pro každý den (kde vyzvednu kolegu, kde ho vysadím), adresa haly ze systému, výpočet km, sám 4,50, s kolegou 5 Kč/km, stravné 155 Kč nad 5 h (3 h 30 min na zápas + cesta), za zápasy ČBF ve všední den +300 Kč.“
+- Nové PR postavené nad #3.
+- Volby uživatele: jen Google, vzdálenosti z Mapy.com.
+
+- **Rozhodnutí:**
+  - [ADR 0008](../adr/0008-ucty-google-oauth-schvalovani.md): `arctic`, Google OIDC s PKCE, `ADMIN_EMAILS`, schvalování spárování na `/admin`.
+  - [PDR 0003](../pdr/0003-cestovne-stravne-vsedni-den.md): herní den = cesta, zastávky a úseky přes Mapy.com, sazby s platností, stravné podle kalendářního roku, státní svátky.
+- **SvelteKit 3:** `redirect()` na cizí doménu vyžaduje `{ external: [...] }`. Formuláře s `use:enhance` po odeslání resetují inputy, proto `update({ reset: false })`.
+- **Ověřeno:**
+  - Unit testy: claims ID tokenu, cesta účtu podle stavu, svátky a Velikonoce, sazby, úseky s kolegou, stravné, všední den, parsování odpovědí Mapy.com.
+  - Účty proti testovací DB (nový účet, žádost, auto-schválení správce, obsazený rozhodčí, schválení, zrušení, zamítnutí).
+  - Přesměrování na Google (redirect URI z `Host` a protokolu).
+  - Playwright nad syntetickými daty: výchozí cesty sezóny, průvodce s vyzvednutím kolegy, spolujezdec, správa účtů, profil, mobil bez vodorovného posunu.
+  - Bez API klíče Mapy.com se jede přes odhad vzdušnou čarou.
+
 ## Další kroky
 
 1. ~~Sazebníky soutěží a výdělek na dashboardu.~~ Hotovo pro celostátní soutěže a Prahu ([PDR 0002](../pdr/0002-odmeny-rozhodcich.md)). Zbývá případně doplnit ostatní oblasti a starší sazebníky ČBF.
@@ -145,4 +164,5 @@ Zadání: „Za zápasy jsou peníze, pošlu ti pár recentních sazebníků, ud
 3. ~~Nastavit cron pro `daily` a `window`, rozhodnout o nasazení.~~ Hotovo: služba `scheduler`, [ADR 0007](../adr/0007-nasazeni-docker-vps.md). Na VPS zbývá jednou spustit `bootstrap` (`deploy/README.md`).
 4. Stáhnout DTD specifikace ČBF a porovnat je s mapováním.
 5. Typované sloupce statistik podle potřeb UI, výklad kódů (`ZS2DP` / `ZS2KP` …).
-6. Zvážit oficiální žádost ČBF o přístup. Silnější přihlášení, až bude aplikace přístupná dalším lidem (PDR 0001).
+6. Zvážit oficiální žádost ČBF o přístup.
+7. Nastavit na VPS `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `ADMIN_EMAILS` / `MAPY_API_KEY` a ověřit Mapy.com API na produkci. Export náhrad pro vyúčtování.

@@ -1,6 +1,6 @@
 # 0001 – Přihlášení výběrem rozhodčího a dashboard v1
 
-- **Status:** Accepted
+- **Status:** Accepted (bod 1, přihlášení bez hesla, nahrazuje [ADR 0008](../adr/0008-ucty-google-oauth-schvalovani.md))
 - **Datum:** 2026-10-14
 - **Související:** [ADR 0006](../adr/0006-session-a-parovani-uctu.md), [ADR 0004](../adr/0004-db-schema-ingestu.md), [history/20261014-scaffold-cbf-ingestu.md](../history/20261014-scaffold-cbf-ingestu.md)
 

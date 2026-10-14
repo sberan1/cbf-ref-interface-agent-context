@@ -26,8 +26,10 @@ Znalostní báze pro projekt **Cz.basketball referee interface** – rozhraní n
 | [ADR 0005](adr/0005-rozsah-a-setrnost-stahovani.md) | Accepted | Rozsah stahování a šetrnost vůči ČBF |
 | [ADR 0006](adr/0006-session-a-parovani-uctu.md) | Accepted | Session a párování účtu s rozhodčím |
 | [ADR 0007](adr/0007-nasazeni-docker-vps.md) | Accepted | Nasazení: Docker na VPS, CI/CD přes GitHub Actions |
+| [ADR 0008](adr/0008-ucty-google-oauth-schvalovani.md) | Accepted | Účty přes Google OAuth se schvalováním správcem |
 | [PDR 0001](pdr/0001-prihlaseni-a-dashboard-rozhodciho.md) | Accepted | Přihlášení výběrem rozhodčího a dashboard v1 |
 | [PDR 0002](pdr/0002-odmeny-rozhodcich.md) | Accepted | Odměny rozhodčích na dashboardu |
+| [PDR 0003](pdr/0003-cestovne-stravne-vsedni-den.md) | Accepted | Cestovné, stravné a náhrada za všední den |
 
 History: [20260923 – analýza exportu](history/20260923-analyza-cbf-exportu.md), [20261014 – scaffold ingestu](history/20261014-scaffold-cbf-ingestu.md).
 

@@ -1,6 +1,6 @@
 # 0006 – Session a párování účtu s rozhodčím
 
-- **Status:** Accepted
+- **Status:** Accepted (přihlášení a párování nahrazuje [ADR 0008](0008-ucty-google-oauth-schvalovani.md), session platí dál)
 - **Datum:** 2026-10-14
 - **Související:** [PDR 0001](../pdr/0001-prihlaseni-a-dashboard-rozhodciho.md), [ADR 0002](0002-stack-sveltekit-drizzle-postgres.md)
 
