@@ -17,22 +17,29 @@ Uživatel chce logy všeho, „třeba do Graylogu“: v compose a s webovým UI 
    - události: přihlášení, žádost o spárování, rozhodnutí správce, uložení cesty, výpadky Mapy.com.
 
    Query stringy ani osobní údaje se nelogují (jen ID účtu).
-3. **Doprava logů:**
+3. **Worker loguje chyby stahování strukturovaně** (doplněno 2026-10-16), aby šly filtrovat v Graylogu i přes MCP:
+   - `fetch failed` (klíč zdroje, endpoint, druh chyby, HTTP status),
+   - `normalize failed` (klíč, endpoint, fáze parse/write, ID uložené odpovědi),
+   - `cbf error page instead of data` a `cbf blocked us, pausing all requests` (status, délka pauzy),
+   - `task failed, will retry` / `task failed permanently` s endpointem, parametry a důvodem úkolu.
+
+   Obsah odpovědí ČBF se nikdy neloguje, jen prvních 80 znaků chybové stránky.
+4. **Doprava logů:**
    - Docker logging driver `gelf` (UDP na `127.0.0.1:${GELF_PORT}`, tag = název kontejneru) pro app, worker, scheduler, migrate, Postgres a RabbitMQ.
    - Kontejnery samotného logovacího stacku logují lokálně (`json-file`).
    - Docker dual logging zachovává `docker compose logs`.
    - UDP neblokuje: výpadek Graylogu nezastaví aplikaci.
-4. **Stack v compose:**
+5. **Stack v compose:**
    - `mongodb` (`mongo:7.0`), `opensearch` (`opensearchproject/opensearch:2.19.1`, single node, bez security pluginu, heap `OPENSEARCH_HEAP`) a `graylog` (`graylog/graylog:6.1`).
    - Root heslo je v `.env` v čitelné podobě (`GRAYLOG_ROOT_PASSWORD`). SHA-256, které Graylog vyžaduje, spočítá entrypoint.
    - Graylog je v síti `proxy` s aliasem `cbf-ref-graylog` (UI na portu 9000) a na loopbacku hostu pro SSH tunel.
-5. **Bez klikání v UI:** jednorázová služba `graylog-setup` (`dist/graylog-setup.js` z image aplikace) přes REST API založí:
+6. **Bez klikání v UI:** jednorázová služba `graylog-setup` (`dist/graylog-setup.js` z image aplikace) přes REST API založí:
    - globální vstup *GELF UDP (docker)*,
    - JSON extraktor na pole `message` s prefixem `app_`, aby `level` z JSONu nekolidoval s číselným GELF `level` v mapování OpenSearch.
 
    Je idempotentní a sama čeká na API.
-6. **Logovací stack nesmí blokovat deploy:** závislosti na něm jsou `service_started`, ne `service_healthy`, a aplikace na něm nezávisí vůbec. `deploy.sh` nasadí nejdřív aplikaci (db, rabbitmq, migrate, app, worker, scheduler), logovací stack až potom a jeho selhání (např. limit Docker Hubu) je jen varování. Bez `GRAYLOG_*` v `.env` se přeskočí.
-7. **Unikátní DNS aliasy:** aplikace a Graylog sdílejí síť proxy s cizími stacky, kde může existovat `db` nebo `mongodb`. Služby se proto navzájem oslovují aliasy `cbf-ref-db`, `cbf-ref-rabbitmq`, `cbf-ref-mongodb` a `cbf-ref-opensearch` (doplněno po review).
+7. **Logovací stack nesmí blokovat deploy:** závislosti na něm jsou `service_started`, ne `service_healthy`, a aplikace na něm nezávisí vůbec. `deploy.sh` nasadí nejdřív aplikaci (db, rabbitmq, migrate, app, worker, scheduler), logovací stack až potom a jeho selhání (např. limit Docker Hubu) je jen varování. Bez `GRAYLOG_*` v `.env` se přeskočí.
+8. **Unikátní DNS aliasy:** aplikace a Graylog sdílejí síť proxy s cizími stacky, kde může existovat `db` nebo `mongodb`. Služby se proto navzájem oslovují aliasy `cbf-ref-db`, `cbf-ref-rabbitmq`, `cbf-ref-mongodb` a `cbf-ref-opensearch` (doplněno po review).
 
 ## Ověřeno lokálně
 
