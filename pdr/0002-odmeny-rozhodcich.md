@@ -62,6 +62,7 @@ Rozhodčí dostává za každý odřízený zápas odměnu podle soutěže. Chce
 
 8. **UI:**
    - Blok „Odměny za řízení“: vyděláno celkem, aktuální sezóna, očekáváno z nadcházejících delegací, počet zápasů bez sazby.
+   - Zápas s výsledkem je odřízený. Zápas bez výsledku zůstává očekávaný ještě den po dni zápasu (výsledky chodí večer nebo druhý den). Potom se bere jako zrušený a je bez sazby (doplněno 2026-10-16).
    - Tabulka po sezónách (vyděláno / z toho odhad / očekáváno / bez sazby) a rozbalovací seznam soutěží bez sazby s důvodem.
    - Graf má přepínač „Zápasy / Odměny“. U odměn je očekávaná část aktuálního období tlumená nad vydělanou.
    - V seznamech zápasů je u rozhodčího částka, s „≈“, když jde o odhad.
