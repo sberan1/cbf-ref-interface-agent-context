@@ -55,10 +55,13 @@ K odměnám za řízení patří náhrady: cestovné, stravné a příplatek za 
      Historické sazby jsou doplněné na žádost uživatele 2026-10-14. Stránky MPSV nebyly ze sandboxu dostupné, hodnoty jsou z textů vyhlášek citovaných ve výsledcích vyhledávání (MPSV, ucetniportal.cz, sagit.cz, finance.cz).
 
    - **Délka cesty** = doba jízdy podle tras + 3 h 30 min na každý zápas dne.
+   - **V obci bydliště stravné není:** když jsou všechny zápasy dne v obci bydliště, nejde o pracovní cestu (§ 152 ZP). Doplněno 2026-10-20 na žádost uživatele.
 5. **Náhrada za všední den** (300 Kč za den) platí pro celostátní soutěže ČBF (oblast 0), Český pohár má 650 Kč od 2025/26. Nevyplácí se:
    - o víkendu,
    - o státním svátku (český kalendář včetně Velkého pátku a Velikonočního pondělí),
    - když je obec bydliště stejná jako obec hal těchto zápasů (pravidlo „s bydlištěm v místě konání“).
+
+   Obec se porovnává bez městských částí: „Praha 8 - Bohnice“ i „Praha 9“ je Praha. Stejně se porovnává i u stravného.
 
    Pražské soutěže příplatek nemají, ostatní oblasti zatím nejsou pokryté.
 6. **Výchozí cesta** (`auto`) = sám autem z domova přes haly domů. Tlačítko „Spočítat nevyplněné dny“ ji doplní pro sezónu, nejvýš 40 dnů na jeden request. Dny, které nejde spočítat (chybí poloha), limit nečerpají, takže nezablokují ostatní. Změna bydliště smaže automatické cesty, potvrzené dostanou nový domov při dalším uložení v průvodci (průvodce vždy začíná a končí doma). Díky cache se API volá zhruba jednou na halu. Uložení v průvodci cestu potvrdí (`confirmed`). „Stejně jako jindy“ převezme vyzvednutí a vysazení z jiného potvrzeného dne a adresy kolegů se ukládají jako místa (`app.place`) pro příště.
