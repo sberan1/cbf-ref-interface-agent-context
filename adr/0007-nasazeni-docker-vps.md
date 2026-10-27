@@ -11,7 +11,7 @@ Uživatel chce aplikaci provozovat v Dockeru na vlastním VPS a nasazovat automa
 ## Rozhodnutí
 
 1. **Adapter:** `@sveltejs/adapter-node` 6 místo `adapter-auto`. Origin se bere z hlavičky `Host` a schéma z `X-Forwarded-Proto` (`PROTOCOL_HEADER`, nastavené v image). Proměnnou `ORIGIN` adapter-node 6 nemá. Reverse proxy proto musí posílat `Host` a `X-Forwarded-Proto`, jinak CSRF kontrola SvelteKitu odmítne POST loginu (403).
-2. **Jeden image pro všechny role** (`Dockerfile`, multi-stage, `node:22-bookworm-slim`, běží jako uživatel `node`). Obsahuje `build/` (web), `dist/cbf.js` a `dist/migrate.js` (worker CLI a migrace zbundlované esbuildem, npm balíčky zůstávají externí) a `drizzle/`. Worker v produkci už neběží přes `tsx`.
+2. **Jeden image pro všechny role** (`Dockerfile`, multi-stage, `node:22.23.4-bookworm-slim`, běží jako uživatel `node`). Verze Node je připnutá na přesný patch kvůli bezpečnostní opravě z října 2026 (CVE-2026-111497 „Node2Shell“, RCE v dekodéru Brotli; doplněno 2026-10-27). Plovoucí tag by mohl přijít ze staré cache buildu. Stejnou verzi má CI a `engines` v `package.json`, které díky `engine-strict` vynucuje i `npm ci`. Obsahuje `build/` (web), `dist/cbf.js` a `dist/migrate.js` (worker CLI a migrace zbundlované esbuildem, npm balíčky zůstávají externí) a `drizzle/`. Worker v produkci už neběží přes `tsx`.
 3. **Produkční stack** `deploy/compose.yaml` (projekt `cbf-ref`):
    - `db` (`postgres:17`) a `rabbitmq` (`rabbitmq:4-management`, pevný `hostname`, aby volume přežil přetvoření kontejneru).
    - `migrate`: jednorázová služba spouštěná při každém `up`. `app`, `worker` a `scheduler` na ní závisí přes `service_completed_successfully`.
