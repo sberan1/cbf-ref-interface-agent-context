@@ -31,6 +31,8 @@ Znalostní báze pro projekt **Cz.basketball referee interface** – rozhraní n
 | [PDR 0001](pdr/0001-prihlaseni-a-dashboard-rozhodciho.md) | Accepted | Přihlášení výběrem rozhodčího a dashboard v1 |
 | [PDR 0002](pdr/0002-odmeny-rozhodcich.md) | Accepted | Odměny rozhodčích na dashboardu |
 | [PDR 0003](pdr/0003-cestovne-stravne-vsedni-den.md) | Accepted | Cestovné, stravné a náhrada za všední den |
+| [PDR 0004](pdr/0004-vlastni-zapasy-dane-filtry.md) | Accepted | Vlastní zápasy, odměny po kalendářních letech, filtry kolegů a týmů |
+| [PDR 0005](pdr/0005-vyuctovani-po-dnech.md) | Accepted | Vyúčtování po dnech |
 
 History: [20260923 – analýza exportu](history/20260923-analyza-cbf-exportu.md), [20261014 – scaffold ingestu](history/20261014-scaffold-cbf-ingestu.md).
 
