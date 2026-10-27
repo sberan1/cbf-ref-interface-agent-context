@@ -33,7 +33,9 @@ Požadavky uživatele z 2026-10-20:
 5. **Týmy a společné zápasy** (doplněno 2026-10-26 na žádost uživatele):
    - **Týmy:** sekce „Týmy, které jsem pískal“ na přehledu ukazuje, kolikrát osoba pískala který tým (doma / venku, rozsah sezón).
      - Tým se sleduje napříč sezónami podle linie (`team.group_id`) a jmenuje se svým posledním názvem. Týmy bez záznamu se seskupují podle jména.
-     - Seznam ukazuje 10 týmů, dá se rozbalit celý a vyhledávat v něm bez diakritiky.
+     - Seznam ukazuje 10 týmů, dá se rozbalit celý a vyhledávat v něm bez diakritiky (i podle kategorie).
+     - U týmu je kategorie jeho poslední soutěže (2026-10-27). Týmy bez záznamu se rozlišují podle jména i kategorie, protože stejné jméno mívá klub ve více kategoriích.
+     - Filtry sezóny a oblasti jako u kolegů, ale nezávislé (`ts`, `to`). Odkaz na tým je předá stránce zápasů.
    - **Kolegové:** žebříček kolegů se dá rozbalit celý. Záznamy stejného rozhodčího se slučují (`official.group_id`).
    - **Stránka `/games`:** kliknutí na kolegu nebo tým otevře zápasy s ním (`?kolega=<id>` nebo `?tym=<klíč>`). Ukazuje počet zápasů, rozsah sezón a odměny a respektuje filtr sezóny a oblasti z přehledu.
 
