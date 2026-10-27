@@ -16,7 +16,7 @@ Uživatel chce logy všeho, „třeba do Graylogu“: v compose a s webovým UI 
    - neošetřené chyby se stackem v `handleError` (`kind === 'unknown'`),
    - události: přihlášení, žádost o spárování, rozhodnutí správce, uložení cesty, výpadky Mapy.com.
 
-   Query stringy ani osobní údaje se nelogují (jen ID účtu).
+   Query stringy ani osobní údaje se nelogují (jen ID účtu). Cesta kalendářového feedu se loguje jako `/calendar/…`, protože obsahuje tajný token ([ADR 0010](0010-kalendar-tajna-adresa.md)).
 3. **Worker loguje chyby stahování strukturovaně** (doplněno 2026-10-16), aby šly filtrovat v Graylogu i přes MCP:
    - `fetch failed` (klíč zdroje, endpoint, druh chyby, HTTP status),
    - `normalize failed` (klíč, endpoint, fáze parse/write, ID uložené odpovědi),
