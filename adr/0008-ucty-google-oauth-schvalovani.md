@@ -22,6 +22,7 @@ Přihlášení výběrem rozhodčího bez hesla (PDR 0001) stačilo, dokud aplik
 3. **Role podle `ADMIN_EMAILS`** (env, čárkami oddělené e-maily). Role se nastavuje při každém přihlášení, env je zdroj pravdy.
 4. **Tok:**
    - Google → nový účet `pending` → `/pair` (vyhledání se a „To jsem já“, uloží `requested_official_id`) → `/pending` → správce na `/admin` schválí → `/dashboard`.
+   - Správce má v menu **Správa** se záložkami Účty (`/admin`) a Haly (`/admin/venues`, oprava polohy hal podle PDR 0003, doplněno 2026-11-09).
    - Správce se při výběru svého záznamu schválí sám.
    - Správce může schválit i jiné ID, zamítnout nebo zrušit spárování.
    - Rozhodčího spárovaného s jiným účtem nejde vybrat.

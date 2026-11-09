@@ -37,9 +37,12 @@ K odměnám za řízení patří náhrady: cestovné, stravné a příplatek za 
    - **Poloha haly** (doplněno 2026-11-09):
      - Bere se z GPS od ČBF. Když chybí (ČBF posílá nuly, ADR 0004), hala se hledá podle adresy.
      - Protože GPS ČBF u některých hal nesedí, průvodce cestou má sekci „Poloha hal“. U každé haly dne ukazuje, odkud poloha je (GPS z ČBF / podle adresy / opravená ručně), a dává odkaz na mapy.com.
-     - Polohu může opravit zadáním adresy (s našeptávačem Mapy.com) a vrátit zpět na ČBF jen správce (`ADMIN_EMAILS`), protože oprava platí pro všechny. Ostatní vidí zdroj polohy a odkaz na mapu a chybu nahlásí správci. Server akce bez role správce odmítne (403).
-     - Oprava je v `app.venue_fix` (migrace `0006_venue_fix`) a platí pro všechny uživatele. Má přednost před GPS z ČBF, ve výpočtu cest i v kalendáři (PDR 0006), a synchronizace ČBF ji nepřepíše. Ukládá se, kdo ji udělal.
-     - Oprava i vrácení smažou automatické cesty všech uživatelů přes tu halu (spočítají se znovu). Cestu daného dne uživateli rovnou přepočítají a zachovají způsob cesty, kolegy, doklady i poznámku.
+     - **Opravit polohu může jen správce** (`ADMIN_EMAILS`), protože oprava platí pro všechny.
+       - Opravuje zadáním adresy (s našeptávačem Mapy.com), a to buď v průvodci cestou u svého dne, nebo kteroukoli halu v menu **Správa → Haly** (`/admin/venues`), když mu ji někdo nahlásí.
+       - Na stránce Haly je hledání podle názvu, ulice nebo obce bez diakritiky a filtr Všechny / Bez GPS z ČBF / Opravené. Haly jsou seřazené podle posledního zápasu a u každé je počet zápasů, zdroj polohy, odkaz na mapu a kdo a kdy ji opravil.
+       - Ostatní vidí v průvodci zdroj polohy a odkaz na mapu a chybu nahlásí správci. Server akce bez role správce odmítne.
+     - Oprava je v `app.venue_fix` (migrace `0006_venue_fix`). Má přednost před GPS z ČBF ve výpočtu cest i v kalendáři (PDR 0006) a synchronizace ČBF ji nepřepíše.
+     - **Přepočet cest:** oprava i vrácení na ČBF hned přepočítají všechny cesty všech uživatelů, které mají zastávku u zápasu v té hale, automatické i potvrzené. Zachová se stav, způsob cesty, kolegové, doklady i poznámka, mění se jen poloha haly a trasy. Cesta, kterou nejde spočítat, zůstane původní a správce vidí jejich počet.
 4. **Sazby** (`src/lib/server/travel/rates.ts`, s platností a původem jako v PDR 0002):
    - **Cestovné** podle sezóny: 4,50 Kč/km sám, 5,00 Kč/km s kolegou a 6,30 Kč/km s kolegou v NBL, ŽBL, 1. lize mužů a Českém poháru (poznámka v přehledech). Přehledy 2023/24–2026/27, před 2023/24 předpoklad.
    - **Stravné** podle vyhlášky MPSV platné v den cesty (přehledy uvádějí stav „v době vydání“). Platí minimum pro podnikatelskou sféru (§ 163 ZP), stejně jako v přehledech. Stupně jsou ≥ 5 h / > 12 h / > 18 h (přesně 12 h je ještě první stupeň), vše v Kč:
