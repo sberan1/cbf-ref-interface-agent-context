@@ -37,7 +37,7 @@ K odměnám za řízení patří náhrady: cestovné, stravné a příplatek za 
    - **Poloha haly** (doplněno 2026-11-09):
      - Bere se z GPS od ČBF. Když chybí (ČBF posílá nuly, ADR 0004), hala se hledá podle adresy.
      - Protože GPS ČBF u některých hal nesedí, průvodce cestou má sekci „Poloha hal“. U každé haly dne ukazuje, odkud poloha je (GPS z ČBF / podle adresy / opravená ručně), a dává odkaz na mapy.com.
-     - Polohu jde opravit zadáním adresy (s našeptávačem Mapy.com) a vrátit zpět na ČBF.
+     - Polohu může opravit zadáním adresy (s našeptávačem Mapy.com) a vrátit zpět na ČBF jen správce (`ADMIN_EMAILS`), protože oprava platí pro všechny. Ostatní vidí zdroj polohy a odkaz na mapu a chybu nahlásí správci. Server akce bez role správce odmítne (403).
      - Oprava je v `app.venue_fix` (migrace `0006_venue_fix`) a platí pro všechny uživatele. Má přednost před GPS z ČBF, ve výpočtu cest i v kalendáři (PDR 0006), a synchronizace ČBF ji nepřepíše. Ukládá se, kdo ji udělal.
      - Oprava i vrácení smažou automatické cesty všech uživatelů přes tu halu (spočítají se znovu). Cestu daného dne uživateli rovnou přepočítají a zachovají způsob cesty, kolegy, doklady i poznámku.
 4. **Sazby** (`src/lib/server/travel/rates.ts`, s platností a původem jako v PDR 0002):
