@@ -34,6 +34,12 @@ K odměnám za řízení patří náhrady: cestovné, stravné a příplatek za 
    - Úseky, kdy je v autě kolega (mezi vyzvednutím a vysazením), jdou za sazbu „s kolegou“, ostatní za sazbu „sám“.
    - Trasy a geokódování se cachují v `app.route_cache` a `app.geo_cache` pro všechny uživatele.
    - Bez API klíče nebo při výpadku se počítá vzdušná čára × 1,3 při 60 km/h. Výsledek je označený jako odhad a při další příležitosti se zkusí znovu.
+   - **Poloha haly** (doplněno 2026-11-09):
+     - Bere se z GPS od ČBF. Když chybí (ČBF posílá nuly, ADR 0004), hala se hledá podle adresy.
+     - Protože GPS ČBF u některých hal nesedí, průvodce cestou má sekci „Poloha hal“. U každé haly dne ukazuje, odkud poloha je (GPS z ČBF / podle adresy / opravená ručně), a dává odkaz na mapy.com.
+     - Polohu jde opravit zadáním adresy (s našeptávačem Mapy.com) a vrátit zpět na ČBF.
+     - Oprava je v `app.venue_fix` (migrace `0006_venue_fix`) a platí pro všechny uživatele. Má přednost před GPS z ČBF, ve výpočtu cest i v kalendáři (PDR 0006), a synchronizace ČBF ji nepřepíše. Ukládá se, kdo ji udělal.
+     - Oprava i vrácení smažou automatické cesty všech uživatelů přes tu halu (spočítají se znovu). Cestu daného dne uživateli rovnou přepočítají a zachovají způsob cesty, kolegy, doklady i poznámku.
 4. **Sazby** (`src/lib/server/travel/rates.ts`, s platností a původem jako v PDR 0002):
    - **Cestovné** podle sezóny: 4,50 Kč/km sám, 5,00 Kč/km s kolegou a 6,30 Kč/km s kolegou v NBL, ŽBL, 1. lize mužů a Českém poháru (poznámka v přehledech). Přehledy 2023/24–2026/27, před 2023/24 předpoklad.
    - **Stravné** podle vyhlášky MPSV platné v den cesty (přehledy uvádějí stav „v době vydání“). Platí minimum pro podnikatelskou sféru (§ 163 ZP), stejně jako v přehledech. Stupně jsou ≥ 5 h / > 12 h / > 18 h (přesně 12 h je ještě první stupeň), vše v Kč:
