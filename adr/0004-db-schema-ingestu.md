@@ -30,6 +30,10 @@ Pravidla:
    - v2 ID osob (`uNid`, `commisarid`, `IDuser`) jsou stabilní napříč sezónami. Ověřeno na rozhodčím i komisaři, kteří mají stejné v2 ID v sezóně 2012/13 i 2026/27.
    - Tým má v2 ID na sezónu (`IDteam`), napříč sezónami ho spojuje `group_id`.
    - Venue je klíčované normalizovaným `name|city` (jediné, co je ve všech zdrojích). `IDhall` z detailu zápasu se ukládá do `venue.hall_id`.
+   - **GPS haly** (doplněno 2026-11-09):
+     - ČBF posílá u hal bez souřadnic `0.00000000`.
+     - Nulové souřadnice a body mimo střední Evropu (šířka 45–56, délka 5–25) se ukládají jako NULL. Cesty pak hledají halu podle adresy.
+     - Migrace `0005_venue_zero_coordinates` opravila uložená data a smazala automatické cesty k takovým halám.
 2. **FK jen uvnitř agregátu** zapisovaného v jedné transakci (`game` → `game_score_quarter`, `game_official`, `player_game_stats`; `team_player` → `player`; `game_official` → `official`). Vazby mezi agregáty (game → phase → competition → season, game → team) jsou indexované sloupce bez FK, protože payloady přicházejí v libovolném pořadí. Chybějící „rodiče“ se zakládají jako stuby (team, season, area, category).
 3. **Nic se neztrácí:** `extra` (jsonb) drží celý zdrojový záznam z v2, `extra_v1` záznam z v1. Typované sloupce jde rozšiřovat bez opětovného stahování.
 4. **Priorita zdrojů:** v2 (`games.php`, `game.php`) je autoritativní, novější pozorování vyhrává (`game.observed_at`, starší payload nikdy nepřepíše novější). v1 (`sched.php`, `divs.php`) jen doplňuje chybějící hodnoty (`coalesce`). U soutěží zapisuje flagy (`competition.flags`), kategorii a ligu. v1 nikdy nezapisuje ID týmů ani delegace (jiný ID prostor). Jeho delegace slouží jen k doplnění `official.group_id` přes stejný zápas a roli, což potřebují hlavně komisaři, protože v2 pro ně group ID neposílá.
