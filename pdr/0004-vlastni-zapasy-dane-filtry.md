@@ -26,8 +26,13 @@ Požadavky uživatele z 2026-10-20:
    - Na stránce je upozornění, že jde o výpočet ze sazebníků, ne o výplaty.
 3. **Kategorie soutěže** se bere z katalogu (`cbf.category`) a jinak z payloadu (`catname`). Ukazuje se pod názvem, pokud ji název už neobsahuje.
 4. **Vlastní zápasy** jsou v tabulce `app.own_game` a na stránce `/own-games`, kde se dají přidat, upravit a smazat.
-   - **Údaje:** datum, popis akce, role (rozhodčí, komisař, stolek, jiné), počet zápasů (turnaj = jeden záznam), odměna celkem, místo a poznámka. Prázdná odměna znamená nezaplaceno nebo zatím neznámo.
+   - **Údaje:** datum, nepovinný čas začátku (migrace `0007_own_game_time`, doplněno 2026-11-09), popis akce, role (rozhodčí, komisař, stolek, jiné), počet zápasů (turnaj = jeden záznam), odměna celkem, místo a poznámka. Prázdná odměna znamená nezaplaceno nebo zatím neznámo.
    - **Kde se počítají:** odměna je skutečná, nikdy odhad. Započítá se do odměn na přehledu (vyděláno, sezóna, očekáváno u budoucích), do grafu odměn, do tabulky po letech a do CSV.
+   - **Kde se zobrazují** (doplněno 2026-11-09, aby na ně uživatel nezapomněl):
+     - V seznamech „Nejbližší zápasy“ a „Poslední zápasy“ na přehledu, mezi delegacemi ČBF podle data a času, se štítkem „vlastní“. Dlaždice „Nadcházející zápasy“ je započítává.
+     - Ve Vyúčtování (PDR 0005).
+     - V kalendáři (PDR 0006): s časem začátku jako běžná událost (2 h na zápas, nejvýš 10 h), bez času celodenní.
+     - Souhrn po letech na stránce vlastních zápasů počítá všechny záznamy a nadcházející uvádí zvlášť („z toho nadcházející“). Dřív ukazoval jen odehrané, takže budoucí zápas vypadal jako 0 Kč.
    - **Kde se nepočítají:** do statistik zápasů ČBF ani do cest a náhrad.
 
 5. **Týmy a společné zápasy** (doplněno 2026-10-26 na žádost uživatele):
