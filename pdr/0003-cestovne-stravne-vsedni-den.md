@@ -19,16 +19,23 @@ K odměnám za řízení patří náhrady: cestovné, stravné a příplatek za 
 1. **Jednotkou je herní den.** Všechny delegace osoby v jeden den (rozhodčí i komisař) tvoří jednu cestu, uloženou v `app.trip` (unikátní uživatel + datum). Cesta se skládá ze zastávek:
    - **domov** (z profilu),
    - **vyzvednutí** a **vysazení** kolegy (adresa, jméno kolegy),
+   - **přesednutí** u kolegy: do jeho auta (`ride`) nebo zpět do svého (`drive`), s adresou a jménem kolegy,
    - **haly** zápasů v pořadí, po sobě jdoucí zápasy v jedné hale se slučují.
 
-   Haly a domov doplňuje server, klient posílá jen vyzvednutí a vysazení.
+   Haly a domov doplňuje server, klient posílá jen vyzvednutí, vysazení a přesednutí.
 2. **Způsob cesty:**
-   - **autem (řidič):** km × sazba,
-   - **spolujezdec:** cestovné bere řidič, stravné se počítá z délky trasy,
+   - **autem:** cestovné je km × sazba za úseky, které osoba řídí (sama nebo s kolegou). Za úseky v autě kolegy ho bere řidič, stravné se počítá z délky celé trasy.
    - **veřejná doprava:** jízdenky podle dokladů,
    - **bez cesty**.
 
    K tomu parkovné a jiné doklady.
+
+   **Přesednutí** (doplněno 2026-11-17 na žádost uživatele): několikrát za sezónu jede rozhodčí ke kolegovi domů a dál jedou kolegovým autem, takže cestovné berou oba, každý za svůj úsek.
+   - Dřívější volby „autem, řídil jsem“ a „autem jako spolujezdec“ jsou sloučené do volby **Autem** s přepínačem **Z domova: řídím já / veze mě kolega**. V datech zůstává `mode` `car` a `passenger`, takže staré cesty spolujezdce se počítají stejně.
+   - Bloky „Přesedám ke kolegovi“ (`ride`, dál jako spolujezdec) a „Přesedám do svého auta“ (`drive`, dál řídí) přepínají, kdo řídí od dané zastávky.
+   - Kdo řídí který úsek, se počítá při čtení ze zastávek a režimu (`drivingByLeg`), takže změna nepotřebuje migraci a přepočet tras při opravě polohy haly (bod 3) ji zachová.
+   - Průvodce ukazuje pod každou zastávkou, jak se pokračuje (řídím sám / řídím, s kolegou / spolujezdec). Přesednutí zpět se předvyplní kolegou a adresou prvního přesednutí.
+   - Náhrady za den ukazují kilometry jako spolujezdec zvlášť (0 Kč, cestovné bere řidič) a Vyúčtování je uvádí u cestovného.
 3. **Kilometry:**
    - Každý úsek se routuje zvlášť přes Mapy.com (`car_fast`). Podle rozpisu rozhoduje spory nejrychlejší trasa na mapy.cz.
    - Úseky, kdy je v autě kolega (mezi vyzvednutím a vysazením), jdou za sazbu „s kolegou“, ostatní za sazbu „sám“.
